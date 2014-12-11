@@ -1,0 +1,35 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceCompatibility = '1.8'
+
+mainClassName = 'com.rymurr.tfl.kafka.Main'
+
+
+repositories {
+    mavenCentral()
+    maven { url "http://clojars.org/repo" }
+}
+
+dependencies {
+    compile 'joda-time:joda-time:2.6'
+    compile 'org.apache.kafka:kafka_2.8.2:0.8.1'
+    //compile 'org.slf4j:slf4j-log4j12:1.6.6'
+    compile 'org.slf4j:log4j-over-slf4j:1.6.6'
+    compile 'org.slf4j:slf4j-parent:1.7.7'
+    compile 'ch.qos.logback:logback-classic:1.1.2'
+    compile 'log4j:log4j:1.2.17', {
+        exclude group: "com.sun.jdmk"
+        exclude group: "com.sun.jmx"
+        exclude group: "javax.mail"
+        exclude group: "javax.jms"
+    }
+    //compile 'com.google.guava:guava:18.0'
+
+
+    testCompile 'junit:junit:4.11' // A dependency for a test framework.
+}
+
+run {
+    systemProperty 'com.rymurr.storm.name', 'foobarTestfoobar'
+}

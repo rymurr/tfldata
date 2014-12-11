@@ -1,0 +1,80 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceCompatibility = '1.7'
+
+mainClassName = 'com.rymurr.tfl.storm.TflTopology'
+
+
+repositories {
+    mavenCentral()
+    maven { url "http://clojars.org/repo" }
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+        //classpath 'com.github.jengelman.gradle.plugins:shadow:1.1.2'
+    }
+}
+
+
+apply plugin: 'java'
+//apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'eu.appsatori.fatjar'
+
+fatJar {
+    exclude 'defaults.yaml'
+}
+
+dependencies {
+    compile 'org.apache.storm:storm:0.9.2-incubating', {
+        ext {
+            fatJarExclude = true
+        }
+    }
+    compile 'org.apache.storm:storm-core:0.9.2-incubating', {
+        ext {
+            fatJarExclude = true
+        }
+    }
+    compile 'org.apache.storm:storm-kafka:0.9.2-incubating'
+    compile 'joda-time:joda-time:2.6'
+    compile 'org.apache.kafka:kafka_2.8.2:0.8.1'
+    //compile 'org.slf4j:slf4j-log4j12:1.6.6'
+    compile 'org.slf4j:log4j-over-slf4j:1.6.6', {
+        ext {
+            fatJarExclude = true
+        }
+    }
+    compile 'org.slf4j:slf4j-parent:1.7.7', {
+        ext {
+            fatJarExclude = true
+        }
+    }
+    compile 'ch.qos.logback:logback-classic:1.1.2', {
+        ext {
+            fatJarExclude = true
+        }
+    }
+    compile 'log4j:log4j:1.2.17', {
+        exclude group: "com.sun.jdmk"
+        exclude group: "com.sun.jmx"
+        exclude group: "javax.mail"
+        exclude group: "javax.jms"
+        ext {
+            fatJarExclude = true
+        }
+    }
+    //compile 'com.google.guava:guava:18.0'
+
+
+    testCompile 'junit:junit:4.11' // A dependency for a test framework.
+}
+
+run {
+    systemProperty 'com.rymurr.storm.name', 'foobarTestfoobar'
+}

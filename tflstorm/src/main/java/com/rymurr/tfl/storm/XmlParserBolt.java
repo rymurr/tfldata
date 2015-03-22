@@ -32,13 +32,19 @@ public class XmlParserBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple input) {
-        String entry = (String)input.getValueByField("xml-message");
+        String entry = (String)input.getValueByField("str");
+        if (entry.isEmpty() || !entry.contains("xml")) {
+            return;
+        }
         InputStream stream = new ByteArrayInputStream(entry.getBytes(StandardCharsets.UTF_8));
         try {
             List<LineEvent> events = xmlParser.run(stream);
-            for (LineEvent event: events) {
-                collector.emit(new Values(event));
+            if (events.isEmpty()) {
+                return;
             }
+            //java8 is pretty snappy! map to new Values and emit to collector using lambdas and streams!
+            //todo make xmlParser return a stream? Lazy evaluation!
+            events.stream().map(Values::new).forEach(collector::emit);
         } catch (FileNotFoundException | XMLStreamException e) {
             logger.error("Parsing problem", e);
         }

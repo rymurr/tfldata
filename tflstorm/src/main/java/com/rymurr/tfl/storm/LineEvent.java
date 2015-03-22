@@ -2,7 +2,9 @@ package com.rymurr.tfl.storm;
 
 import org.joda.time.DateTime;
 
-public class LineEvent implements Cloneable {
+import java.io.Serializable;
+
+public class LineEvent implements Cloneable, Serializable {
     private DateTime dateCreated;
     private String line;
     private String lineName;

@@ -28,7 +28,7 @@ public class Main {
 
     public Main() {
         Properties properties = new Properties();
-        properties.put("metadata.broker.list", "192.168.0.116:49154");
+        properties.put("metadata.broker.list", "192.168.0.116:49156");
         properties.put("serializer.class", "kafka.serializer.StringEncoder");
         properties.put("request.required.acks", "1");
 

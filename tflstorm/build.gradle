@@ -1,9 +1,17 @@
 apply plugin: 'java'
 apply plugin: 'application'
-
-sourceCompatibility = '1.7'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+sourceCompatibility = '1.8'
 
 mainClassName = 'com.rymurr.tfl.storm.TflTopology'
+
+configurations {
+    providedCompile
+}
+
+conf2ScopeMappings.addMapping(1, configurations.providedCompile, 'provided')
 
 
 repositories {
@@ -40,12 +48,17 @@ dependencies {
         ext {
             fatJarExclude = true
         }
+        exclude module: 'log4j'
+        exclude module: 'slf4j-log4j12'
     }
     compile 'org.apache.storm:storm-kafka:0.9.2-incubating'
     compile 'joda-time:joda-time:2.6'
-    compile 'org.apache.kafka:kafka_2.8.2:0.8.1'
+    compile ('org.apache.kafka:kafka_2.8.2:0.8.1') {
+        exclude module: 'log4j'
+        exclude module: 'slf4j-log4j12'
+    }
     //compile 'org.slf4j:slf4j-log4j12:1.6.6'
-    compile 'org.slf4j:log4j-over-slf4j:1.6.6', {
+    /*compile 'org.slf4j:log4j-over-slf4j:1.6.6', {
         ext {
             fatJarExclude = true
         }
@@ -68,11 +81,19 @@ dependencies {
         ext {
             fatJarExclude = true
         }
-    }
+    }*/
     //compile 'com.google.guava:guava:18.0'
 
 
     testCompile 'junit:junit:4.11' // A dependency for a test framework.
+}
+
+sourceSets.main.compileClasspath += configurations.providedCompile
+
+idea {
+    module{
+        scopes.PROVIDED.plus += configurations.providedCompile
+    }
 }
 
 run {

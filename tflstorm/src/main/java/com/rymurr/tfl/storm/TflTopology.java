@@ -6,12 +6,22 @@ import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
 import backtype.storm.generated.AlreadyAliveException;
 import backtype.storm.generated.InvalidTopologyException;
+import backtype.storm.spout.SchemeAsMultiScheme;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import storm.kafka.BrokerHosts;
+import storm.kafka.KafkaSpout;
+import storm.kafka.SpoutConfig;
+import storm.kafka.StringScheme;
+import storm.kafka.ZkHosts;
+
+
+import java.util.UUID;
 
 public class TflTopology {
+    private final static String TOPIC = "tfl-xml";
     private static final Logger logger = LoggerFactory.getLogger(TflTopology.class);
 
     private TopologyBuilder builder = new TopologyBuilder();
@@ -19,9 +29,11 @@ public class TflTopology {
     private LocalCluster cluster;
 
     public TflTopology() {
-        final String filename = "/data/xxx.xml";
-        builder.setSpout("xml-file", new XmlFileSpout(filename));
-        builder.setBolt("xml-parse", new XmlParserBolt()).shuffleGrouping("xml-file");
+        BrokerHosts hosts = new ZkHosts("192.168.0.115:49155");
+        SpoutConfig spoutConfig = new SpoutConfig(hosts, TOPIC, "/tfl-xml-spout", UUID.randomUUID().toString());
+        spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
+        builder.setSpout("xml-kafka-spout", new KafkaSpout(spoutConfig), 2);
+        builder.setBolt("xml-parse", new XmlParserBolt()).shuffleGrouping("xml-kafka-spout");
         builder.setBolt("print-bolt", new PrintBolt()).shuffleGrouping("xml-parse");
     }
 
@@ -56,7 +68,7 @@ public class TflTopology {
         } else {
             if (args != null && args.length == 1)
                 logger.info("Running in local mode");
-            topology.runLocal(10000);
+            topology.runLocal(120000);
         }
     }
 }

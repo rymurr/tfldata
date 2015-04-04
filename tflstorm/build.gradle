@@ -39,6 +39,7 @@ fatJar {
 }
 
 dependencies {
+    compile 'redis.clients:jedis:2.6.2'
     compile 'org.apache.storm:storm:0.9.2-incubating', {
         ext {
             fatJarExclude = true
@@ -50,8 +51,12 @@ dependencies {
         }
         exclude module: 'log4j'
         exclude module: 'slf4j-log4j12'
+        exclude module: 'netty'
     }
-    compile 'org.apache.storm:storm-kafka:0.9.2-incubating'
+    compile ('org.apache.storm:storm-kafka:0.9.2-incubating') {
+        exclude module: 'log4j'
+        exclude module: 'slf4j-log4j12'
+    }
     compile 'joda-time:joda-time:2.6'
     compile ('org.apache.kafka:kafka_2.8.2:0.8.1') {
         exclude module: 'log4j'
@@ -82,8 +87,14 @@ dependencies {
             fatJarExclude = true
         }
     }*/
-    //compile 'com.google.guava:guava:18.0'
-
+    compile 'com.google.guava:guava:18.0'
+    compile ('com.datastax.cassandra:cassandra-driver-core:2.1.5') {
+        exclude module: 'log4j'
+        exclude module: 'slf4j-log4j12'
+    }
+    compile ('org.apache.zookeeper:zookeeper:3.4.5') {
+        exclude module: 'netty'
+    }
 
     testCompile 'junit:junit:4.11' // A dependency for a test framework.
 }
